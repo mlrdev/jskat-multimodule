@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Jan Schäfer (jansch@users.sourceforge.net)
+ * Copyright (C) 2019 Jan Schäfer (jansch@users.sourceforge.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 
 import org.jskat.control.command.skatseries.ReplayGameCommand;
 import org.jskat.control.command.table.NextReplayMoveCommand;
+import org.jskat.control.command.table.ReadyForNextGameCommand;
 import org.jskat.control.event.skatgame.GameStartEvent;
+import org.jskat.control.event.table.SkatGameReplayFinishedEvent;
 import org.jskat.control.event.table.SkatGameReplayStartedEvent;
 import org.jskat.data.SkatGameData.GameState;
 import org.jskat.data.SkatSeriesData;
@@ -39,7 +42,7 @@ import com.google.common.eventbus.Subscribe;
 /**
  * Controls a series of skat games
  */
-public class SkatSeries extends JSkatThread {
+public class SkatSeries {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SkatSeries.class);
 
@@ -50,6 +53,7 @@ public class SkatSeries extends JSkatThread {
 	private int roundsToGo = 0;
 	private boolean unlimitedRounds = false;
 	private boolean onlyPlayRamsch = false;
+	private boolean readyForNextGame = false;
 	private final Map<Player, JSkatPlayer> players;
 	private SkatGame currSkatGame;
 	private SkatGameReplayer currReplayGame;
@@ -58,7 +62,7 @@ public class SkatSeries extends JSkatThread {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param tableName
 	 *            Table name
 	 */
@@ -72,7 +76,6 @@ public class SkatSeries extends JSkatThread {
 
 		JSkatEventBus.TABLE_EVENT_BUSSES.get(tableName).register(this);
 
-		setName("SkatSeries on table " + tableName); //$NON-NLS-1$
 		players = new HashMap<Player, JSkatPlayer>();
 	}
 
@@ -88,19 +91,27 @@ public class SkatSeries extends JSkatThread {
 	}
 
 	@Subscribe
-	public void replayNextMoveOn(final NextReplayMoveCommand comman) {
+	public void replayNextMoveOn(final NextReplayMoveCommand command) {
 		currReplayGame.oneMoveForward();
 	}
 
-	/**
-     * Sets the skat players
-     * 
-     * @param newPlayers
-     *            New skat series player
-     */
-    public void setPlayers(final List<JSkatPlayer> newPlayers) {
+	@Subscribe
+	public void readyForNextGameOn(final ReadyForNextGameCommand command) {
 
-        if (newPlayers.size() != 3) {
+		JSkatEventBus.TABLE_EVENT_BUSSES.get(data.getTableName()).post(
+				new SkatGameReplayFinishedEvent());
+		readyForNextGame = true;
+	}
+
+	/**
+	 * Sets the skat players
+	 *
+	 * @param newPlayers
+	 *            New skat series player
+	 */
+	public void setPlayers(final List<JSkatPlayer> newPlayers) {
+
+		if (newPlayers.size() != 3) {
 			throw new IllegalArgumentException(
 					"Only three players are allowed at the moment."); //$NON-NLS-1$
 		}
@@ -110,15 +121,15 @@ public class SkatSeries extends JSkatThread {
 				newPlayers.get(2).isAIPlayer());
 
 		// memorize third player to find it again after shuffling the players
-        final JSkatPlayer thirdPlayer = newPlayers.get(2);
+		final JSkatPlayer thirdPlayer = newPlayers.get(2);
 
 		// set players in random order
 		// simple Collection.shuffle doesn't work here, because the order of
 		// players should be the same like in start skat series dialog
 		final int startPlayer = RANDOM.nextInt(3);
-        players.put(Player.FOREHAND, newPlayers.get(startPlayer));
-        players.put(Player.MIDDLEHAND, newPlayers.get((startPlayer + 1) % 3));
-        players.put(Player.REARHAND, newPlayers.get((startPlayer + 2) % 3));
+		players.put(Player.FOREHAND, newPlayers.get(startPlayer));
+		players.put(Player.MIDDLEHAND, newPlayers.get((startPlayer + 1) % 3));
+		players.put(Player.REARHAND, newPlayers.get((startPlayer + 2) % 3));
 
 		// if an human player is playing, always show him/her at the bottom
 		// FIXME (jansch 09.05.2012) this is GUI logic, move it to the GUI
@@ -135,7 +146,7 @@ public class SkatSeries extends JSkatThread {
 
 	/**
 	 * Checks whether a series is running
-	 * 
+	 *
 	 * @return TRUE if the series is running
 	 */
 	public boolean isRunning() {
@@ -145,7 +156,7 @@ public class SkatSeries extends JSkatThread {
 
 	/**
 	 * Starts the series
-	 * 
+	 *
 	 * @param rounds
 	 *            Number of rounds to be played
 	 * @param newUnlimitedRound
@@ -158,16 +169,12 @@ public class SkatSeries extends JSkatThread {
 		data.setState(SeriesState.RUNNING);
 	}
 
-	/**
-	 * @see Thread#run()
-	 */
-	@Override
 	public void run() {
 
 		int roundsPlayed = 0;
 		int gameNumber = 0;
 
-		while ((roundsToGo > 0 || unlimitedRounds) && !isTerminated()) {
+		while ((roundsToGo > 0 || unlimitedRounds)) {
 
 			LOG.debug("Playing round " + (roundsPlayed + 1)); //$NON-NLS-1$
 
@@ -197,10 +204,10 @@ public class SkatSeries extends JSkatThread {
 						players.get(Player.REARHAND));
 
 				JSkatEventBus.TABLE_EVENT_BUSSES.get(data.getTableName()).post(
-						new GameStartEvent(gameNumber, gameVariant, data
-								.getBottomPlayer().getLeftNeighbor(), data
-								.getBottomPlayer().getRightNeighbor(), data
-								.getBottomPlayer()));
+						new GameStartEvent(gameNumber, gameVariant,
+								data.getBottomPlayer().getLeftNeighbor(),
+								data.getBottomPlayer().getRightNeighbor(),
+								data.getBottomPlayer()));
 
 				currSkatGame.setView(view);
 				currSkatGame.setMaxSleep(maxSleep);
@@ -208,37 +215,24 @@ public class SkatSeries extends JSkatThread {
 				LOG.debug("Playing game " + (j + 1)); //$NON-NLS-1$
 
 				data.addGame(currSkatGame);
-				currSkatGame.start();
-				try {
-					currSkatGame.join();
 
-					LOG.debug("Game ended: join"); //$NON-NLS-1$
+				CompletableFuture.runAsync(() -> currSkatGame.run()).join();
 
-					sleep(maxSleep);
+				LOG.debug("Game ended: join"); //$NON-NLS-1$
 
-				} catch (final InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				if (isHumanPlayerInvolved()) {
-					// wait for human to start next game
-					startWaiting();
-				}
-
-				checkWaitCondition();
-
-				// Breaks on termination -
-				// the thread has to come to the end
-				if (isTerminated()) {
-					break;
+				readyForNextGame = false;
+				while (isHumanPlayerInvolved() && !readyForNextGame) {
+					try {
+						Thread.sleep(200);
+					} catch (final InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 
 			roundsToGo--;
 			roundsPlayed++;
-
-			checkWaitCondition();
 		}
 
 		data.setState(SeriesState.SERIES_FINISHED);
@@ -262,7 +256,7 @@ public class SkatSeries extends JSkatThread {
 
 	/**
 	 * Gets the state of the series
-	 * 
+	 *
 	 * @return State of the series
 	 */
 	public SeriesState getSeriesState() {
@@ -272,7 +266,7 @@ public class SkatSeries extends JSkatThread {
 
 	/**
 	 * Gets the game state of the current game
-	 * 
+	 *
 	 * @return Game state
 	 */
 	public GameState getGameState() {
@@ -281,7 +275,7 @@ public class SkatSeries extends JSkatThread {
 
 	/**
 	 * Gets the ID of the current game
-	 * 
+	 *
 	 * @return ID of the current game
 	 */
 	public int getCurrentGameID() {
@@ -290,41 +284,8 @@ public class SkatSeries extends JSkatThread {
 	}
 
 	/**
-	 * Pauses the current game
-	 */
-	public void pauseSkatGame() {
-
-		synchronized (currSkatGame) {
-
-			currSkatGame.startWaiting();
-		}
-	}
-
-	/**
-	 * Resumes the current game
-	 */
-	public void resumeSkatGame() {
-
-		synchronized (currSkatGame) {
-
-			currSkatGame.stopWaiting();
-			currSkatGame.notify();
-		}
-	}
-
-	/**
-	 * Checks whether the current skat game is paused
-	 * 
-	 * @return TRUE if the current skat game is paused
-	 */
-	public boolean isSkatGameWaiting() {
-
-		return currSkatGame.isWaiting();
-	}
-
-	/**
 	 * Sets the view for the series
-	 * 
+	 *
 	 * @param newView
 	 *            View
 	 */
@@ -335,7 +296,7 @@ public class SkatSeries extends JSkatThread {
 
 	/**
 	 * Sets whether only ramsch games are played or not
-	 * 
+	 *
 	 * @param isOnlyPlayRamsch
 	 *            TRUE, if only ramsch games should be played
 	 */
@@ -344,10 +305,10 @@ public class SkatSeries extends JSkatThread {
 	}
 
 	/**
-	 * Sets max sleep between actions during the skat series, this must only be
-	 * set in skat series that are run with a GUI, otherwise the default value
-	 * of 0 is used
-	 * 
+	 * Sets max sleep between actions during the skat series, this must only be set
+	 * in skat series that are run with a GUI, otherwise the default value of 0 is
+	 * used
+	 *
 	 * @param newMaxSleep
 	 *            New value for maximum sleep time in milliseconds
 	 */

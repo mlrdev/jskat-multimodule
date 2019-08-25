@@ -39,6 +39,7 @@ import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -154,8 +155,9 @@ public class JSkatOptionsDialog extends JDialog {
 			JSkatOptionsDialog.this.options.setSchieberRamsch(JSkatOptionsDialog.this.schiebeRamsch.isSelected());
 			JSkatOptionsDialog.this.options
 					.setSchieberRamschJacksInSkat(JSkatOptionsDialog.this.schiebeRamschJacksInSkat.isSelected());
-			JSkatOptionsDialog.this.options.setRamschSkatOwner(JSkatOptionsDialog.this.ramschSkatLastTrick.isSelected()
-					? RamschSkatOwner.LAST_TRICK : RamschSkatOwner.LOSER);
+			JSkatOptionsDialog.this.options.setRamschSkatOwner(
+					JSkatOptionsDialog.this.ramschSkatLastTrick.isSelected() ? RamschSkatOwner.LAST_TRICK
+							: RamschSkatOwner.LOSER);
 
 			JSkatOptionsDialog.this.options.saveJSkatProperties();
 			refreshCardSet();
@@ -190,8 +192,7 @@ public class JSkatOptionsDialog extends JDialog {
 	/**
 	 * Constructor
 	 * 
-	 * @param parent
-	 *            Parent component of the options dialog
+	 * @param parent Parent component of the options dialog
 	 */
 	public JSkatOptionsDialog(final Component parent) {
 
@@ -600,7 +601,7 @@ public class JSkatOptionsDialog extends JDialog {
 
 		setOptionValues();
 
-		super.setVisible(isVisible);
+		SwingUtilities.invokeLater(() -> JSkatOptionsDialog.super.setVisible(isVisible));
 	}
 
 	private void setOptionValues() {

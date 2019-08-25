@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Jan Schäfer (jansch@users.sourceforge.net)
+ * Copyright (C) 2019 Jan Schäfer (jansch@users.sourceforge.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@ package org.jskat.control;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-import org.jskat.control.event.table.SkatGameReplayFinishedEvent;
 import org.jskat.control.event.table.SkatSeriesStartedEvent;
 import org.jskat.data.SkatGameData.GameState;
 import org.jskat.data.SkatSeriesData.SeriesState;
@@ -41,7 +41,7 @@ public class SkatTable {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param tableName
 	 *            Table name
 	 * @param options
@@ -57,7 +57,7 @@ public class SkatTable {
 
 	/**
 	 * Checks whether a skat series is running or not
-	 * 
+	 *
 	 * @return TRUE if the series is running
 	 */
 	public boolean isSeriesRunning() {
@@ -67,7 +67,7 @@ public class SkatTable {
 
 	/**
 	 * Starts a skat series
-	 * 
+	 *
 	 * @param rounds
 	 *            Number of rounds to be played
 	 * @param unlimitedRounds
@@ -96,77 +96,15 @@ public class SkatTable {
 			series.setPlayers(player);
 			series.setOnlyPlayRamsch(onlyPlayRamsch);
 			series.setMaxRounds(rounds, unlimitedRounds);
-			series.start();
+			CompletableFuture.runAsync(() -> series.run());
 		}
 
 		JSkatEventBus.INSTANCE.post(new SkatSeriesStartedEvent(tableName));
 	}
 
 	/**
-	 * Pauses a skat series
-	 */
-	public void pauseSkatSeries() {
-
-		synchronized (series) {
-
-			series.startWaiting();
-		}
-	}
-
-	/**
-	 * Resumes a paused skat series
-	 */
-	public void resumeSkatSeries() {
-
-		JSkatEventBus.TABLE_EVENT_BUSSES.get(tableName).post(
-				new SkatGameReplayFinishedEvent());
-
-		synchronized (series) {
-
-			series.stopWaiting();
-			series.notify();
-		}
-	}
-
-	/**
-	 * Pauses the current skat game
-	 */
-	public void pauseSkatGame() {
-
-		series.pauseSkatGame();
-	}
-
-	/**
-	 * Resumes the current paused skat game
-	 */
-	public void resumeSkatGame() {
-
-		series.resumeSkatGame();
-	}
-
-	/**
-	 * Checks whether the current skat game is waiting or not
-	 * 
-	 * @return TRUE if the skat game is waiting
-	 */
-	public boolean isSkatGameWaiting() {
-
-		return series.isSkatGameWaiting();
-	}
-
-	/**
-	 * Checks whether the skat series is waiting or not
-	 * 
-	 * @return TRUE if the skat series is waiting
-	 */
-	public boolean isSkatSeriesWaiting() {
-
-		return series.isWaiting();
-	}
-
-	/**
 	 * Gets the maximal number of players allowed at the table
-	 * 
+	 *
 	 * @return Maximal number of players
 	 */
 	public int getMaxPlayerCount() {
@@ -176,7 +114,7 @@ public class SkatTable {
 
 	/**
 	 * Gets the current number of players sitting at the table
-	 * 
+	 *
 	 * @return Current number of players
 	 */
 	public int getPlayerCount() {
@@ -186,7 +124,7 @@ public class SkatTable {
 
 	/**
 	 * Places a player at the table
-	 * 
+	 *
 	 * @param newPlayer
 	 *            New Player
 	 * @return TRUE if the player was placed correctly
@@ -215,7 +153,7 @@ public class SkatTable {
 
 	/**
 	 * Gets the state of the skat series
-	 * 
+	 *
 	 * @return State of the skat series
 	 */
 	public SeriesState getSeriesState() {
@@ -225,7 +163,7 @@ public class SkatTable {
 
 	/**
 	 * Gets the game state of the current game
-	 * 
+	 *
 	 * @return Game state
 	 */
 	public GameState getGameState() {
@@ -237,7 +175,7 @@ public class SkatTable {
 
 	/**
 	 * Gets the ID of the current game
-	 * 
+	 *
 	 * @return Game ID of the current game
 	 */
 	public int getCurrentGameID() {
@@ -247,7 +185,7 @@ public class SkatTable {
 
 	/**
 	 * Gets table name
-	 * 
+	 *
 	 * @return Table name
 	 */
 	public String getName() {

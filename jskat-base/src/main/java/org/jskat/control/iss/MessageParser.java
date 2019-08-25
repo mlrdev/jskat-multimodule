@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Jan Schäfer (jansch@users.sourceforge.net)
+ * Copyright (C) 2019 Jan Schäfer (jansch@users.sourceforge.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -619,6 +619,8 @@ public class MessageParser {
 		// + " p0:" + penalty0 + " p1:" + penalty1 + " p2:" + penalty2
 		// + " l:" + this.left + " to:" + this.timeout + " r:" + (resigned
 		// ? '1' : '0');
+		
+		// TODO: or simply "passed"
 
 		if (token.startsWith("d:")) { //$NON-NLS-1$
 

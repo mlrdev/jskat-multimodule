@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Jan Schäfer (jansch@users.sourceforge.net)
+ * Copyright (C) 2019 Jan Schäfer (jansch@users.sourceforge.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.jskat.AbstractJSkatTest;
 import org.jskat.ai.rnd.AIPlayerRND;
@@ -52,10 +54,9 @@ public class SkatSeriesTest extends AbstractJSkatTest {
 
 		series.setMaxRounds(1, false);
 
-		series.start();
 		try {
-			series.join();
-		} catch (InterruptedException e) {
+			CompletableFuture.runAsync(() -> series.run()).get();
+		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

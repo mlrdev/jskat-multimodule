@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Jan Schäfer (jansch@users.sourceforge.net)
+ * Copyright (C) 2019 Jan Schäfer (jansch@users.sourceforge.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,8 +78,8 @@ public abstract class SuitGrandRamschRule extends AbstractSkatRule {
 						.getSuitGrandOrder()) {
 					// cards have same suit grand order
 					// only possible if two jacks are checked
-					if (cardToBeat.getSuit().getSuitOrder() < card.getSuit()
-							.getSuitOrder()) {
+					if (cardToBeat.getSuit().getSortOrder() < card.getSuit()
+							.getSortOrder()) {
 
 						result = true;
 					}

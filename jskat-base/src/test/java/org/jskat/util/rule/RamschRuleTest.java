@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Jan Schäfer (jansch@users.sourceforge.net)
+ * Copyright (C) 2019 Jan Schäfer (jansch@users.sourceforge.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  */
 package org.jskat.util.rule;
 
-import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
@@ -166,8 +167,7 @@ public class RamschRuleTest extends AbstractJSkatTest {
 		Set<Player> ramschLoosers = data.getRamschLoosers();
 
 		assertThat(ramschLoosers.size(), is(2));
-		assertThat(ramschLoosers, hasItem(Player.FOREHAND));
-		assertThat(ramschLoosers, hasItem(Player.MIDDLEHAND));
+		assertThat(ramschLoosers, containsInAnyOrder(Player.FOREHAND, Player.MIDDLEHAND));
 	}
 
 	/**
@@ -191,8 +191,7 @@ public class RamschRuleTest extends AbstractJSkatTest {
 		Set<Player> ramschLoosers = data.getRamschLoosers();
 
 		assertThat(ramschLoosers.size(), is(2));
-		assertThat(ramschLoosers, hasItem(Player.MIDDLEHAND));
-		assertThat(ramschLoosers, hasItem(Player.REARHAND));
+		assertThat(ramschLoosers, containsInAnyOrder(Player.MIDDLEHAND, Player.REARHAND));
 	}
 
 	/**
@@ -228,8 +227,7 @@ public class RamschRuleTest extends AbstractJSkatTest {
 		Set<Player> ramschLoosers = data.getRamschLoosers();
 
 		assertThat(ramschLoosers.size(), is(2));
-		assertThat(ramschLoosers, hasItem(Player.MIDDLEHAND));
-		assertThat(ramschLoosers, hasItem(Player.REARHAND));
+		assertThat(ramschLoosers, containsInAnyOrder(Player.MIDDLEHAND, Player.REARHAND));
 	}
 
 	/**
@@ -253,8 +251,7 @@ public class RamschRuleTest extends AbstractJSkatTest {
 		Set<Player> ramschLoosers = data.getRamschLoosers();
 
 		assertThat(ramschLoosers.size(), is(2));
-		assertThat(ramschLoosers, hasItem(Player.FOREHAND));
-		assertThat(ramschLoosers, hasItem(Player.REARHAND));
+		assertThat(ramschLoosers, containsInAnyOrder(Player.FOREHAND, Player.REARHAND));
 	}
 
 	/**
@@ -278,9 +275,7 @@ public class RamschRuleTest extends AbstractJSkatTest {
 		Set<Player> ramschLoosers = data.getRamschLoosers();
 
 		assertThat(ramschLoosers.size(), is(3));
-		assertThat(ramschLoosers, hasItem(Player.FOREHAND));
-		assertThat(ramschLoosers, hasItem(Player.MIDDLEHAND));
-		assertThat(ramschLoosers, hasItem(Player.REARHAND));
+		assertThat(ramschLoosers, containsInAnyOrder(Player.FOREHAND, Player.MIDDLEHAND, Player.REARHAND));
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Jan Schäfer (jansch@users.sourceforge.net)
+ * Copyright (C) 2019 Jan Schäfer (jansch@users.sourceforge.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package org.jskat.control.event;
 
-import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -75,7 +75,7 @@ public class DiscardSkatEventTest extends AbstractJSkatTest {
 			assertTrue(data.getPlayerCards(Player.FOREHAND).contains(card));
 		}
 		assertThat(data.getSkat().size(), is(2));
-		assertThat(data.getSkat(), hasItems(Card.DA, Card.HA));
+		assertThat(data.getSkat(), containsInAnyOrder(Card.DA, Card.HA));
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Jan Schäfer (jansch@users.sourceforge.net)
+ * Copyright (C) 2019 Jan Schäfer (jansch@users.sourceforge.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,12 @@ package org.jskat.control.command.table;
 
 import org.jskat.data.JSkatViewType;
 
-public class CreateTableCommand {
+public class CreateTableCommand extends AbstractTableCommand {
 
 	public final JSkatViewType tableType;
-	public final String tableName;
 
-	public CreateTableCommand(JSkatViewType tableType, String tableName) {
+	public CreateTableCommand(final JSkatViewType tableType, final String tableName) {
+		super(tableName);
 		this.tableType = tableType;
-		this.tableName = tableName;
 	}
 }

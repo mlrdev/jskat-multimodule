@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Jan Schäfer (jansch@users.sourceforge.net)
+ * Copyright (C) 2019 Jan Schäfer (jansch@users.sourceforge.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package org.jskat.control.event;
 
-import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -51,7 +51,7 @@ public class PickUpSkatEventTest extends AbstractJSkatTest {
 		assertThat(data.isHand(), is(false));
 		assertThat(data.getPlayerCards(Player.FOREHAND).size(), is(2));
 		assertThat(data.getPlayerCards(Player.FOREHAND),
-				hasItems(Card.CJ, Card.SJ));
+				containsInAnyOrder(Card.CJ, Card.SJ));
 		assertThat(data.getSkat().size(), is(0));
 		assertThat(data.isSkatPickedUp(), is(true));
 	}
@@ -65,7 +65,7 @@ public class PickUpSkatEventTest extends AbstractJSkatTest {
 		assertThat(data.isHand(), is(true));
 		assertThat(data.getPlayerCards(Player.FOREHAND).size(), is(0));
 		assertThat(data.getSkat().size(), is(2));
-		assertThat(data.getSkat(), hasItems(Card.CJ, Card.SJ));
+		assertThat(data.getSkat(), containsInAnyOrder(Card.CJ, Card.SJ));
 		assertThat(data.isSkatPickedUp(), is(false));
 	}
 }

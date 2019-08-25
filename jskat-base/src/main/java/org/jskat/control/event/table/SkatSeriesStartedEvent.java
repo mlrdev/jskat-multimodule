@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Jan Schäfer (jansch@users.sourceforge.net)
+ * Copyright (C) 2019 Jan Schäfer (jansch@users.sourceforge.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,12 @@ package org.jskat.control.event.table;
 
 public class SkatSeriesStartedEvent extends AbstractTableEvent {
 
-	public SkatSeriesStartedEvent(String tableName) {
+	public SkatSeriesStartedEvent(final String tableName) {
 		super(tableName);
+	}
+
+	@Override
+	public String toString() {
+		return "SkatSeriesStartedEvent: tableName: " + tableName;
 	}
 }

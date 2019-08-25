@@ -16,24 +16,12 @@
  */
 package org.jskat;
 
-import org.jskat.data.DesktopSavePathResolver;
-import org.jskat.data.JSkatOptions;
-import org.junit.BeforeClass;
-
 /**
- * Abstract class for all JSkat unit tests
- *
- * FIXME: this is a duplicate from jskat-base, find a way to use that one
- * instead of copying.
+ * This class is needed to start JSkat from a fat jar.
  */
-public abstract class AbstractJSkatTest {
+public class Launcher {
 
-	/**
-	 * Creates the logger
-	 */
-	@BeforeClass
-	public static void createLogger() {
-		final JSkatOptions options = JSkatOptions.instance(new DesktopSavePathResolver());
-		options.resetToDefault();
-	}
+    public static void main(String[] args) {
+        JSkatFX.main(args);
+    }
 }

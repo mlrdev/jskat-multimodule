@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Jan Schäfer (jansch@users.sourceforge.net)
+ * Copyright (C) 2019 Jan Schäfer (jansch@users.sourceforge.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +15,28 @@
  */
 package org.jskat.ai.mjl;
 
-import org.apache.log4j.Logger;
 import org.jskat.player.ImmutablePlayerKnowledge;
 import org.jskat.util.CardList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Markus J. Luzius <br>
  *         created: 24.01.2011 18:20:09
- * 
+ *
  */
 public abstract class AbstractCardPlayer implements CardPlayer {
-	private static final Logger log = Logger
-			.getLogger(AbstractCardPlayer.class);
+
+	private static final Logger log = LoggerFactory.getLogger(AbstractCardPlayer.class);
 
 	protected CardList cards = null;
 
-	protected AbstractCardPlayer(CardList cards) {
+	protected AbstractCardPlayer(final CardList cards) {
 		this.cards = cards;
 	}
 
 	@Override
-	public void startGame(ImmutablePlayerKnowledge knowledge) {
+	public void startGame(final ImmutablePlayerKnowledge knowledge) {
 		log.debug("Starting game...");
 		cards.sort(knowledge.getGameAnnouncement().getGameType());
 	}

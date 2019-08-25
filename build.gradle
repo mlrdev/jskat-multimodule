@@ -1,75 +1,82 @@
-plugins {
-	id "com.github.hierynomus.license" version "0.12.1"
-	id "com.github.johnrengelman.shadow" version "1.2.3"
+buildscript {
+    repositories {
+        mavenCentral()
+    }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '3.0'
+plugins {
+    id "com.github.hierynomus.license" version "0.12.1"
+    id "org.openjfx.javafxplugin" version "0.0.7"
 }
 
 apply plugin: 'application'
 
-version = '0.16.0'
+version = '0.17.0-SNAPSHOT'
 
 allprojects {
-	repositories {
-	    mavenCentral()
-	}
-
-	apply plugin: 'eclipse'
-	apply plugin: 'idea'
+    repositories {
+        mavenCentral()
+    }
 }
 
 subprojects {
-	apply plugin: 'java'
-	apply plugin: 'jacoco'
-	apply plugin: 'license'
+    apply plugin: 'java'
+    apply plugin: 'license'
 
-	sourceCompatibility = 1.8
-	targetCompatibility = 1.8
+    sourceCompatibility = 11
+    targetCompatibility = 11
 
-	task sourcesJar(type: Jar, dependsOn: classes) {
-	    classifier = 'sources'
-	    from sourceSets.main.allSource
-	}
-
-	task javadocJar(type: Jar, dependsOn: javadoc) {
-	    classifier = 'javadoc'
-	    from javadoc.destinationDir
-	}
-
-	artifacts {
-	    archives sourcesJar
-	    archives javadocJar
-	}
-	
-	jacocoTestReport {
-	    reports {
-    	    xml.enabled = true
-        	html.enabled = true
-    	}
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
     }
 
-	check.dependsOn jacocoTestReport
-	
-	license {
-    	include "**/*.java"
-    	header project.file('LICENSE.header')
-    	ext.year = Calendar.getInstance().get(Calendar.YEAR)
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar
+        archives javadocJar
+    }
+
+    license {
+        include "**/*.java"
+        header project.file('LICENSE.header')
+        ext.year = Calendar.getInstance().get(Calendar.YEAR)
+    }
+
+    javadoc {
+        options.addBooleanOption('html5', true)
+    }
+
+    test {
+        testLogging {
+            events "passed", "skipped", "failed"
+            exceptionFormat "full"
+        }
     }
 }
 
 dependencies {
-	compile project(':jskat-base')
-	compile project(':jskat-swing-gui')
-	compile project(':jskat-javafx-gui')
+    compile project(':jskat-base')
+    compile project(':jskat-swing-gui')
+    compile project(':jskat-javafx-gui')
 }
 
 startScripts {
-	mainClassName 'org.jskat.JSkatFX'
+    mainClassName 'org.jskat.JSkatFX'
+    applicationDefaultJvmArgs = ["-Djdk.gtk.version=2"]
 }
 
-shadowJar {
-	baseName = 'JSkat'
-	mainClassName = 'org.jskat.JSkatFX'
+mainClassName = 'org.jskat.JSkatFX'
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.jskat.Launcher'
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }

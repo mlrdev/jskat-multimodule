@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Jan Schäfer (jansch@users.sourceforge.net)
+ * Copyright (C) 2019 Jan Schäfer (jansch@users.sourceforge.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ public class RemoveTableCommand {
 	public final String tableName;
 	public final JSkatViewType tableType;
 
-	public RemoveTableCommand(String tableName, JSkatViewType tableType) {
-		this.tableName = tableName;
+	public RemoveTableCommand(JSkatViewType tableType, String tableName) {
 		this.tableType = tableType;
+		this.tableName = tableName;
 	}
 }

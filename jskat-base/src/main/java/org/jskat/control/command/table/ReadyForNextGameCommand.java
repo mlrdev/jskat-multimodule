@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Jan Schäfer (jansch@users.sourceforge.net)
+ * Copyright (C) 2019 Jan Schäfer (jansch@users.sourceforge.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jskat.ai.nn.input;
+package org.jskat.control.command.table;
 
-import org.jskat.player.ImmutablePlayerKnowledge;
-import org.jskat.util.Card;
-
-public class UnplayedPlayerPartyCardsAndNextCardStrategy extends
-		UnplayedPlayerPartyCardsStrategy {
-
-	@Override
-	public double[] getNetworkInput(ImmutablePlayerKnowledge knowledge,
-			Card cardToPlay) {
-
-		double[] result = super.getNetworkInput(knowledge, cardToPlay);
-
-		result[getNetworkInputIndex(cardToPlay)] = OFF;
-
-		return result;
-	}
+/**
+ * This command is created when the next game in a skat series should be
+ * started.
+ */
+public class ReadyForNextGameCommand {
 }

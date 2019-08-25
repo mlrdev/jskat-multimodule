@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Jan Schäfer (jansch@users.sourceforge.net)
+ * Copyright (C) 2019 Jan Schäfer (jansch@users.sourceforge.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package org.jskat;
 
-import org.apache.log4j.PropertyConfigurator;
 import org.jskat.data.DesktopSavePathResolver;
 import org.jskat.data.JSkatOptions;
 import org.junit.BeforeClass;
@@ -30,9 +29,7 @@ public abstract class AbstractJSkatTest {
 	 */
 	@BeforeClass
 	public static void createLogger() {
-		PropertyConfigurator.configure(ClassLoader
-				.getSystemResource("org/jskat/config/log4j.properties")); //$NON-NLS-1$
-		JSkatOptions options = JSkatOptions
+		final JSkatOptions options = JSkatOptions
 				.instance(new DesktopSavePathResolver());
 		options.resetToDefault();
 	}
